@@ -20,7 +20,7 @@ RUN apt-get update && \
     && chown -R www-data:www-data /var/log/nginx /var/cache/nginx
 
 #NGINX CONFIGURATION FILE
-COPY ./config/nginx.conf /etc/nginx/nginx.conf
+COPY ./conf/nginx.conf /etc/nginx/nginx.conf
 RUN chmod +x /etc/nginx/nginx.conf
 
 #NGINX SCRIPT ENTRYPOINT
@@ -38,7 +38,7 @@ RUN mkdir -p ${OPENSSL_PATH} && \
 ENTRYPOINT ["/usr/local/bin/nginx_entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
 
-#METADATAS
+#OCI METADATAS
 LABEL org.opencontainers.image.title="nginx_image_inception_42" \
       org.opencontainers.image.description="Custom debian image with NGINX and SSL/TLS" \
       org.opencontainers.image.version="inception" \

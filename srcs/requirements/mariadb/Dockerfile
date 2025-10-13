@@ -34,7 +34,7 @@ EXPOSE 3306
 ENTRYPOINT ["/usr/bin/tini", "--"]
 CMD ["/usr/local/bin/mariadb_entrypoint.sh"]
 
-#METADATAS
+#OCI METADATAS
 LABEL org.opencontainers.image.title="mariadb_image_inception_42" \
       org.opencontainers.image.description="custom debian with MARIADB" \
       org.opencontainers.image.version="mariadb" \

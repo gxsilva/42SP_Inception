@@ -1,4 +1,5 @@
 services:
+# ========================== NGINX CONF ===============================
   nginx:
     container_name: nginx
     build:
@@ -13,6 +14,18 @@ services:
       - wordpress_data:/var/www/html:ro
     networks:
       - inception_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -k -f https://localhost:443 || exit 1"]
+      interval: 30s 
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      wordpress:
+        condition: service_healthy
+# ========================== MARIADB CONF ===============================
   mariadb:
     build:
       context: ./requirements/mariadb
@@ -29,12 +42,38 @@ services:
       - db_password
       - db_root_password
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$(cat /run/secrets/db_root_password)"]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 30s
     restart: unless-stopped
+# ========================== WORDPRESS CONF ===============================
+  wordpress:
+    container_name: wordpress
+    build:
+      context: ./requirements/wordpress
+      dockerfile: Dockerfile
+    image: wordpress:inception
+    env_file:
+      - ./.env
+    secrets:
+      - db_password
+      - wordpress_admin_password
+    restart: unless-stopped
+    networks:
+      - inception_network
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    volumes:
+      - wordpress_data:/var/www/html
+    healthcheck:
+      test: ["CMD-SHELL", "php-fpm7.4 -t"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 # ========================== VOLUMES ===============================
 volumes:
   wordpress_data:
@@ -55,6 +94,8 @@ secrets:
     file: ../secrets/db_password.txt
   db_root_password:
     file: ../secrets/db_root_password.txt
+  wordpress_admin_password:
+    file: ../secrets/wordpress_admin_password.txt
 # ========================== NETWORK ===============================
 networks:
   inception_network:

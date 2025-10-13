@@ -21,7 +21,7 @@ fi
 if [ -f /etc/nginx/nginx.conf ]; then
     log_info "Configuration Process..."
 
-    file "Generating /etc/nginx/nginx.conf from ./config/nginx.conf..."
+    log_file "Generating /etc/nginx/nginx.conf from ./config/nginx.conf..."
     envsubst '\$NGINX_URL \$NGINX_USER \$NGINX_ROOT_FOLDER  \$NGINX_HTTPS_PORT \$OPENSSL_PATH \$OPENSSL_PVKEY_PATH \$OPENSSL_CA' \
                 < /etc/nginx/nginx.conf > /tmp/nginx.conf &&  \
     mv /tmp/nginx.conf /etc/nginx/nginx.conf

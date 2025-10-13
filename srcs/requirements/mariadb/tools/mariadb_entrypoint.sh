@@ -28,7 +28,7 @@ else
     log_info "Debug mode DISABLE"
 fi
 
-#SECRETS MANAGEMENT
+#MANAGEMENT SECRETS 
 if [ -z "${MYSQL_PASSWORD:-}" ] && [ -f "${MYSQL_SP_PASSWORD:-}" ]; then
     MYSQL_PASSWORD=$(<"${MYSQL_SP_PASSWORD}")
 else
