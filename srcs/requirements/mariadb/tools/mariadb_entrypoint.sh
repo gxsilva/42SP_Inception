@@ -8,6 +8,7 @@ log_success() { echo "✅ [OK] $*"; }
 log_error()   { echo "❌ [ERROR] $*" >&2; }
 log_dir()     { echo "📁 [DIR] $*"; }
 log_warn()    { echo "⚠️ [WARN] $*"; }
+log_debug()   { echo "🪲 [DEBUG] $*"; }
 
 #UNSET SECRETS VARIABLE
 unset_secrets()
@@ -31,6 +32,9 @@ fi
 #MANAGEMENT SECRETS 
 if [ -z "${MYSQL_PASSWORD:-}" ] && [ -f "${MYSQL_SP_PASSWORD:-}" ]; then
     MYSQL_PASSWORD=$(<"${MYSQL_SP_PASSWORD}")
+    if [ "${DEBUG:-}" = "true" ]; then
+        log_debug "MYSQL_PASSWORD: ${MYSQL_PASSWORD}"
+    fi
 else
     log_error "Failed to initialize MYSQL_PASSWORD. File not found or empty at path: ${MYSQL_SP_PASSWORD}"
     false
@@ -38,6 +42,9 @@ fi
 
 if [ -z "${MYSQL_ROOT_PASSWORD:-}" ] &&  [ -f "${MYSQL_SP_ROOT_PASSWORD}" ]; then
     MYSQL_ROOT_PASSWORD=$(<"${MYSQL_SP_ROOT_PASSWORD}")
+     if [ "${DEBUG:-}" = "true" ]; then
+        log_debug "MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}"
+    fi
 else
     log_error "Failed to initialize MYSQL_ROOT_PASSWORD. File not found or empty at path: ${MYSQL_SP_ROOT_PASSWORD}"
     false
@@ -47,7 +54,7 @@ fi
 if [ ! -f "/var/lib/mysql/.initialized" ]; then
     log_info "Initialize Data Base..."
     mariadb-install-db --user=mysql --datadir=/var/lib/mysql --rpm --skip-test-db
-    
+
     log_info "Start temporary instance for configuration..."
 
     mysqld --user=mysql --datadir=/var/lib/mysql --skip-networking --socket=/tmp/mysql_init.sock &

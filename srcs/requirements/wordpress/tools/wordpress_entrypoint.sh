@@ -8,6 +8,7 @@ log_success() { echo "✅ [OK] $*"; }
 log_error()   { echo "❌ [ERROR] $*" >&2; }
 log_dir()     { echo "📁 [DIR] $*"; }
 log_warn()    { echo "⚠️ [WARN] $*"; }
+log_debug()   { echo "🪲 [DEBUG] $*"; }
 
 #DEBUG CONFIGURATION
 if [ "${DEBUG:-}" = "true" ]; then
@@ -20,6 +21,9 @@ fi
 #MANAGEMENT SECRETS 
 if [ -z "${MYSQL_PASSWORD:-}" ] &&  [ -f "${MYSQL_SP_PASSWORD}" ]; then
     MYSQL_PASSWORD=$(<"${MYSQL_SP_PASSWORD}")
+    if [ "${DEBUG:-}" = "true" ]; then
+        log_debug "MYSQL_PASSWORD: ${MYSQL_PASSWORD}"
+    fi
 else
     log_error "Failed to initialize MYSQL_PASSWORD. File not found or empty at path: ${MYSQL_SP_PASSWORD}"
     false
@@ -27,6 +31,9 @@ fi
 
 if [ -z "${WORDPRESS_ADMIN_PASSWORD:-}" ] &&  [ -f "${WORDPRESS_SP_ADMIN_PASSWORD}" ]; then
     WORDPRESS_ADMIN_PASSWORD=$(<"${WORDPRESS_SP_ADMIN_PASSWORD}")
+    if [ "${DEBUG:-}" = "true" ]; then
+        log_debug "WORDPRESS_ADMIN_PASSWORD: ${WORDPRESS_ADMIN_PASSWORD}"
+    fi
 else
     log_error "Failed to initialize MYSQL_PASSWORD. File not found or empty at path: ${WORDPRESS_SP_ADMIN_PASSWORD}"
     false
@@ -68,6 +75,12 @@ download_wordpress() {
 create_wp_config() {
     if [ ! -f "wp-config.php" ]; then
         log_info "Creating WordPress configuration..."
+        if [ "${DEBUG:-}" = "true" ]; then
+            log_debug "dbname: ${MYSQL_DATABASE:-<not set>}"
+            log_debug "dbuser: ${MYSQL_USER:-<not set>}"
+            log_debug "dbpass: [REDACTED]"
+            log_debug "dbhost: ${WORDPRESS_DB_HOST:-<not set>}"
+        fi
         wp config create \
             --dbname="$MYSQL_DATABASE" \
             --dbuser="$MYSQL_USER" \
@@ -102,6 +115,13 @@ download_wordpress() {
 install_wordpress() {
     if ! wp core is-installed --allow-root 2>/dev/null; then
         log_info "Installing WordPress..."
+        if [ "${DEBUG:-}" = "true" ]; then
+            log_debug "url: ${WORDPRESS_URL:-<not set>}"
+            log_debug "title: ${WORDPRESS_TITLE:-<not set>}"
+            log_debug "admin_user: ${WORDPRESS_ADMIN_USER:-<not set>}"
+            log_debug "admin_password: [REDACTED]"
+            log_debug "admin_email: [REDACTED]"
+        fi
         wp core install \
             --url="$WORDPRESS_URL" \
             --title="$WORDPRESS_TITLE" \
@@ -137,7 +157,6 @@ install_wordpress() {
 
 unset_variables()
 {
-    
     if [ -z "$MYSQL_PASSWORD" ]; then
         unset MYSQL_PASSWORD
     fi
