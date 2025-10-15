@@ -58,6 +58,24 @@ wait_for_mysql() {
     return 0
 }
 
+wait_for_redis() {
+    log_info "Checking Redis availability..."
+    local max_retries=10
+    local count=0
+    
+    while [ $count -lt $max_retries ]; do
+        if nc -z redis 6379 2>/dev/null || timeout 1 bash -c "cat < /dev/null > /dev/tcp/redis/6379" 2>/dev/null; then
+            log_info "Redis is available"
+            return 0
+        fi
+        count=$((count + 1))
+        sleep 1
+    done
+    
+    log_info "Redis not available (optional) - continuing without it"
+    return 0
+}
+
 download_wordpress() {
     if [ ! -f "wp-load.php" ]; then
         log_info "Downloading WordPress core files..."
@@ -89,6 +107,52 @@ create_wp_config() {
     else
         log_info "WordPress configuration already exists"
     fi
+    return 0
+}
+
+#--allow-root -> Allow WP_CLI to run the command as root user (it pop out an warning by default)
+configure_redis() {
+    log_info "Configuring Redis cache settings..."
+
+    wp config set WP_REDIS_HOST "$REDIS_HOST" --type=constant --allow-root 2>/dev/null || \
+        log_error "Failed to set WP_REDIS_HOST"
+    wp config set WP_REDIS_PORT "$REDIS_PORT" --raw --type=constant --allow-root 2>/dev/null || \
+        log_error "Failed to set WP_REDIS_PORT"
+    wp config set WP_REDIS_DATABASE "$REDIS_WORDPRESS_DATABASE" --raw --type=constant --allow-root 2>/dev/null || \
+        log_error "Failed to set WP_REDIS_DATABASE"
+    wp config set WP_CACHE true --raw --type=constant --allow-root 2>/dev/null || \
+        log_error "Failed to set WP_CACHE"
+    log_info "Redis configuration completed"
+    return 0
+}
+
+setup_redis_plugin() {
+    log_info "Setting up Redis cache plugin..."
+    
+    # Check if plugin is installed
+    if ! wp plugin is-installed redis-cache --allow-root 2>/dev/null; then
+        log_info "Installing Redis cache plugin..."
+        wp plugin install redis-cache --activate --allow-root || {
+            log_error "Failed to install Redis cache plugin"
+            return 1
+        }
+    else
+        log_info "Redis cache plugin already installed"
+        # Activate if not active
+        if ! wp plugin is-active redis-cache --allow-root 2>/dev/null; then
+            wp plugin activate redis-cache --allow-root || log_error "Failed to activate Redis cache plugin"
+        fi
+    fi
+    
+    # Enable Redis object cache
+    if ! wp redis status --allow-root 2>/dev/null | grep -q "Connected"; then
+        log_info "Enabling Redis object cache..."
+        wp redis enable --allow-root 2>/dev/null || log_error "Failed to enable Redis cache"
+    else
+        log_info "Redis object cache already enabled"
+    fi
+    
+    log_info "Redis plugin setup completed"
     return 0
 }
 
@@ -140,9 +204,16 @@ unset_variables() {
 
 main() {
     wait_for_mysql || exit 1
+    wait_for_redis || exit 1
+
     download_wordpress || exit 1
     create_wp_config || exit 1
+
+    configure_redis || exit 1
+    
     install_wordpress || exit 1
+
+    setup_redis_plugin || exit 1
     unset_variables || exit 1
 
     log_success "WordPress initialization completed"

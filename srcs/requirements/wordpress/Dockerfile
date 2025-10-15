@@ -7,6 +7,7 @@ RUN apt-get update && \
     tini \
     mariadb-client \
     php php-fpm php-cli php-mysql php-curl php-gd php-mbstring php-xml php-zip \
+    php-redis \
     php-intl php-bcmath php-opcache \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /var/www/html /run/php \
