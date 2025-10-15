@@ -16,8 +16,9 @@ RUN apt-get update && \
     && chmod -R 755 /var/www/html /run/php
 
 #INSTALL WORDPRESS CLI
-RUN curl -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
-        && chmod +x /usr/local/bin/wp
+RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
+    && chmod +x wp-cli.phar \
+    && mv wp-cli.phar /usr/local/bin/wp
 
 #(DEPRECATED BY ME XD)
 # COPY ./config/www.conf /etc/php/*/fpm/pool.d/www.conf
@@ -27,10 +28,6 @@ RUN sed -i 's/listen = \/run\/php\/php.*\.sock/listen = 0.0.0.0:9000/' /etc/php/
     && sed -i 's/;listen.group = www-data/listen.group = www-data/' /etc/php/*/fpm/pool.d/www.conf \
     && sed -i 's/;listen.mode = 0660/listen.mode = 0660/' /etc/php/*/fpm/pool.d/www.conf \
     && touch /var/log/php7.4-fpm.log \
-    && chown www-data:www-data /var/log/php7.4-fpm.log
-
-#ENABLE PHP-FMP LOG FILE
-RUN touch /var/log/php7.4-fpm.log \
     && chown www-data:www-data /var/log/php7.4-fpm.log
 
 WORKDIR /var/www/html

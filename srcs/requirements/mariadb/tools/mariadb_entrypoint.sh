@@ -31,7 +31,7 @@ fi
 
 #MANAGEMENT SECRETS 
 if [ -z "${MYSQL_PASSWORD:-}" ] && [ -f "${MYSQL_SP_PASSWORD:-}" ]; then
-    MYSQL_PASSWORD=$(<"${MYSQL_SP_PASSWORD}")
+    MYSQL_PASSWORD=$(cat "${MYSQL_SP_PASSWORD}")
     if [ "${DEBUG:-}" = "true" ]; then
         log_debug "MYSQL_PASSWORD: ${MYSQL_PASSWORD}"
     fi
@@ -41,7 +41,7 @@ else
 fi
 
 if [ -z "${MYSQL_ROOT_PASSWORD:-}" ] &&  [ -f "${MYSQL_SP_ROOT_PASSWORD}" ]; then
-    MYSQL_ROOT_PASSWORD=$(<"${MYSQL_SP_ROOT_PASSWORD}")
+    MYSQL_ROOT_PASSWORD=$(cat "${MYSQL_SP_ROOT_PASSWORD}")
      if [ "${DEBUG:-}" = "true" ]; then
         log_debug "MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}"
     fi
