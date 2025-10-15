@@ -1,20 +1,14 @@
 #!/bin/sh
 set -e
 
-#MULTILEVEL LOG
-log() {
-    level="$1"
-    shift
-    case "$level" in
-        INFO)    echo "ℹ️ [INFO] $*";;
-        FILE)    echo "📄 [FILE] $*";;
-        SUCCESS) echo "✅ [OK] $*";;
-        ERROR)   echo "❌ [ERROR] $*" >&2;;
-        DIR)     echo "📁 [DIR] $*";;
-        WARN)    echo "⚠️ [WARN] $*";;
-        *)       echo "🔍 [UNKNOWN] $*";;
-    esac
-}
+#MACROS FUNCTIONS
+log_info()    { echo "ℹ️ [INFO] $*"; }
+log_file()    { echo "📄 [FILE] $*"; }
+log_success() { echo "✅ [OK] $*"; }
+log_error()   { echo "❌ [ERROR] $*" >&2; }
+log_dir()     { echo "📁 [DIR] $*"; }
+log_warn()    { echo "⚠️ [WARN] $*"; }
+
 #UNSET SECRETS VARIABLE
 unset_secrets()
 {
@@ -37,9 +31,6 @@ fi
 #MANAGEMENT SECRETS 
 if [ -z "${MYSQL_PASSWORD:-}" ] && [ -f "${MYSQL_SP_PASSWORD:-}" ]; then
     MYSQL_PASSWORD=$(<"${MYSQL_SP_PASSWORD}")
-    if [ "${DEBUG:-}" = "true" ]; then
-        log DEBUG "MYSQL_PASSWORD: ${MYSQL_PASSWORD}"
-    fi
 else
     log ERROR "Failed to initialize MYSQL_PASSWORD. File not found or empty at path: ${MYSQL_SP_PASSWORD}"
     false
@@ -47,9 +38,6 @@ fi
 
 if [ -z "${MYSQL_ROOT_PASSWORD:-}" ] &&  [ -f "${MYSQL_SP_ROOT_PASSWORD}" ]; then
     MYSQL_ROOT_PASSWORD=$(<"${MYSQL_SP_ROOT_PASSWORD}")
-     if [ "${DEBUG:-}" = "true" ]; then
-        log DEBUG "MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}"
-    fi
 else
     log ERROR "Failed to initialize MYSQL_ROOT_PASSWORD. File not found or empty at path: ${MYSQL_SP_ROOT_PASSWORD}"
     false
@@ -59,8 +47,8 @@ fi
 if [ ! -f "/var/lib/mysql/.initialized" ]; then
     log INFO "Initialize Data Base..."
     mariadb-install-db --user=mysql --datadir=/var/lib/mysql --rpm --skip-test-db
-
-    log INFO "Start temporary instance for configuration..."
+    
+    log_info "Start temporary instance for configuration..."
 
     mysqld --user=mysql --datadir=/var/lib/mysql --skip-networking --socket=/tmp/mysql_init.sock &
     MYSQL_PID="$!"
