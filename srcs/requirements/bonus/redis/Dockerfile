@@ -1,23 +1,28 @@
 FROM debian:bullseye
 
+#INSTALL THE PACKAGES
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
     redis-server \
+    redis-tools \
     tini \
     gettext-base \
-    redis-tools \
     && rm -rf /var/lib/apt/lists/*
 
+#FOLDER AND USER PERMISSIONS
 RUN mkdir -p /var/lib/redis \
     && chown redis:redis /var/lib/redis \
     && chmod 755 /var/lib/redis
 
+#ARG && ENV 
 ARG ARG_REGIS_CONFIG_PATH=/etc/redis/redis.conf
 ENV REDIS_CONFIG_PATH=${ARG_REGIS_CONFIG_PATH}
 
+#REDIS CONFIG
 COPY conf/redis.conf ${ARG_REGIS_CONFIG_PATH}
-COPY tools/redis_entrypoint.sh /usr/local/bin
 
+#REDIS ENTRYPOINT
+COPY tools/redis_entrypoint.sh /usr/local/bin
 RUN chown redis:redis ${ARG_REGIS_CONFIG_PATH} \
     && chmod +x /usr/local/bin/redis_entrypoint.sh
 

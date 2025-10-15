@@ -110,6 +110,7 @@ create_wp_config() {
     return 0
 }
 
+#--allow-root -> Allow WP_CLI to run the command as root user (it pop out an warning by default)
 configure_redis() {
     log_info "Configuring Redis cache settings..."
 
@@ -122,6 +123,36 @@ configure_redis() {
     wp config set WP_CACHE true --raw --type=constant --allow-root 2>/dev/null || \
         log_error "Failed to set WP_CACHE"
     log_info "Redis configuration completed"
+    return 0
+}
+
+setup_redis_plugin() {
+    log_info "Setting up Redis cache plugin..."
+    
+    # Check if plugin is installed
+    if ! wp plugin is-installed redis-cache --allow-root 2>/dev/null; then
+        log_info "Installing Redis cache plugin..."
+        wp plugin install redis-cache --activate --allow-root || {
+            log_error "Failed to install Redis cache plugin"
+            return 1
+        }
+    else
+        log_info "Redis cache plugin already installed"
+        # Activate if not active
+        if ! wp plugin is-active redis-cache --allow-root 2>/dev/null; then
+            wp plugin activate redis-cache --allow-root || log_error "Failed to activate Redis cache plugin"
+        fi
+    fi
+    
+    # Enable Redis object cache
+    if ! wp redis status --allow-root 2>/dev/null | grep -q "Connected"; then
+        log_info "Enabling Redis object cache..."
+        wp redis enable --allow-root 2>/dev/null || log_error "Failed to enable Redis cache"
+    else
+        log_info "Redis object cache already enabled"
+    fi
+    
+    log_info "Redis plugin setup completed"
     return 0
 }
 
@@ -174,9 +205,15 @@ unset_variables() {
 main() {
     wait_for_mysql || exit 1
     wait_for_redis || exit 1
+
     download_wordpress || exit 1
     create_wp_config || exit 1
+
+    configure_redis || exit 1
+    
     install_wordpress || exit 1
+
+    setup_redis_plugin || exit 1
     unset_variables || exit 1
 
     log_success "WordPress initialization completed"
