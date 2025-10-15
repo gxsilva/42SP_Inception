@@ -1,6 +1,4 @@
-ARG DEBIAN_VERSION=bullseye
-
-FROM debian:${DEBIAN_VERSION}
+FROM debian:bullseye
 
 #INSTALL THE PACKAGES
 RUN apt-get update && \

@@ -1,6 +1,4 @@
-ARG DEBIAN_VERSION=bullseye
-
-FROM debian:${DEBIAN_VERSION}
+FROM debian:bullseye
 
 #NGINX ENV
 ENV OPENSSL_PATH=/etc/nginx/ssl
