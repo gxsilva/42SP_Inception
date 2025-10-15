@@ -1,5 +1,4 @@
 #!/bin/sh
-set -e
 
 #MACROS FUNCTIONS
 log_info()    { echo "ℹ️ [INFO] $*"; }
@@ -19,18 +18,26 @@ fi
 
 #MANAGEMENT SECRETS 
 if [ -z "${MYSQL_PASSWORD:-}" ] &&  [ -f "${MYSQL_SP_PASSWORD}" ]; then
-    MYSQL_PASSWORD=$(<"${MYSQL_SP_PASSWORD}")
+    MYSQL_PASSWORD=$(cat "${MYSQL_SP_PASSWORD}")
+    if [ "${DEBUG:-}" = "true" ]; then
+        log_debug "MYSQL_PASSWORD: ${MYSQL_PASSWORD}"
+    fi
 else
-    log ERROR "Failed to initialize MYSQL_PASSWORD. File not found or empty at path: ${MYSQL_SP_PASSWORD}"
-    false
+    log_error "Failed to initialize MYSQL_PASSWORD. File not found or empty at path: ${MYSQL_SP_PASSWORD}"
+    exit 1
 fi
 
 if [ -z "${WORDPRESS_ADMIN_PASSWORD:-}" ] &&  [ -f "${WORDPRESS_SP_ADMIN_PASSWORD}" ]; then
-    WORDPRESS_ADMIN_PASSWORD=$(<"${WORDPRESS_SP_ADMIN_PASSWORD}")
+    WORDPRESS_ADMIN_PASSWORD=$(cat "${WORDPRESS_SP_ADMIN_PASSWORD}")
+    if [ "${DEBUG:-}" = "true" ]; then
+        log_debug "WORDPRESS_ADMIN_PASSWORD: ${WORDPRESS_ADMIN_PASSWORD}"
+    fi
 else
-    log ERROR "Failed to initialize MYSQL_PASSWORD. File not found or empty at path: ${WORDPRESS_SP_ADMIN_PASSWORD}"
-    false
+    log_error "Failed to initialize WORDPRESS_ADMIN_PASSWORD. File not found or empty at path: ${WORDPRESS_SP_ADMIN_PASSWORD}"
+    exit 1
 fi
+
+cd /var/www/html
 
 wait_for_mysql() {
    log INFO "Waiting for MySQL database to be ready..."
@@ -85,20 +92,6 @@ create_wp_config() {
     return 0
 }
 
-download_wordpress() {
-    if [ ! -f "wp-load.php" ]; then
-        log INFO "Downloading WordPress core files..."
-        wp core download --allow-root || {
-            echo "Failed to download WordPress"
-            return 1
-        }
-        log SUCCESS "WordPress core files downloaded successfully"
-    else
-        log INFO "WordPress core files already exist"
-    fi
-    return 0
-}
-
 install_wordpress() {
     if ! wp core is-installed --allow-root 2>/dev/null; then
         log_info "Installing WordPress..."
@@ -135,23 +128,22 @@ install_wordpress() {
     return 0
 }
 
-unset_variables()
-{
-    
+unset_variables() {
     if [ -z "$MYSQL_PASSWORD" ]; then
         unset MYSQL_PASSWORD
     fi
     if [ -z "$WORDPRESS_ADMIN_PASSWORD" ]; then
         unset WORDPRESS_ADMIN_PASSWORD
     fi
+    return 0
 }
 
 main() {
-    wait_for_mysql
-    download_wordpress
-    create_wp_config
-    install_wordpress
-    unset_variables
+    wait_for_mysql || exit 1
+    download_wordpress || exit 1
+    create_wp_config || exit 1
+    install_wordpress || exit 1
+    unset_variables || exit 1
 
     log SUCCESS "WordPress initialization completed"
 }
