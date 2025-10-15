@@ -23,9 +23,9 @@ unset_secrets()
 #DEBUG CONFIGURATION
 if [ "${DEBUG:-}" = "true" ]; then
     set -x
-    log INFO "Debug mode ENABLE"
+    log_info "Debug mode ENABLE"
 else
-    log INFO "Debug mode DISABLE"
+    log_info "Debug mode DISABLE"
 fi
 
 #MANAGEMENT SECRETS 
@@ -35,7 +35,7 @@ if [ -z "${MYSQL_PASSWORD:-}" ] && [ -f "${MYSQL_SP_PASSWORD:-}" ]; then
         log_debug "MYSQL_PASSWORD: ${MYSQL_PASSWORD}"
     fi
 else
-    log ERROR "Failed to initialize MYSQL_PASSWORD. File not found or empty at path: ${MYSQL_SP_PASSWORD}"
+    log_error "Failed to initialize MYSQL_PASSWORD. File not found or empty at path: ${MYSQL_SP_PASSWORD}"
     false
 fi
 
@@ -45,13 +45,13 @@ if [ -z "${MYSQL_ROOT_PASSWORD:-}" ] &&  [ -f "${MYSQL_SP_ROOT_PASSWORD}" ]; the
         log_debug "MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}"
     fi
 else
-    log ERROR "Failed to initialize MYSQL_ROOT_PASSWORD. File not found or empty at path: ${MYSQL_SP_ROOT_PASSWORD}"
+    log_error "Failed to initialize MYSQL_ROOT_PASSWORD. File not found or empty at path: ${MYSQL_SP_ROOT_PASSWORD}"
     false
 fi
 
 #MARIADB INSTALL AND CONFIGURATION
 if [ ! -f "/var/lib/mysql/.initialized" ]; then
-    log INFO "Initialize Data Base..."
+    log_info "Initialize Data Base..."
     mariadb-install-db --user=mysql --datadir=/var/lib/mysql --rpm --skip-test-db
     
     log_info "Start temporary instance for configuration..."
@@ -60,7 +60,7 @@ if [ ! -f "/var/lib/mysql/.initialized" ]; then
     MYSQL_PID="$!"
 
     until mysqladmin ping --socket=/tmp/mysql_init.sock --silent; do
-        log INFO "Database being configured"
+        log_info "Database being configured"
         sleep 1
     done
 
@@ -76,14 +76,14 @@ EOF
     wait "$MYSQL_PID"
     
     touch /var/lib/mysql/.initialized
-    log SUCCESS "Data Base initialization completed"
+    log_success "Data Base initialization completed"
 else
-    log SUCCESS "Data Base already initialize, skipping bootstrap script..."
+    log_success "Data Base already initialize, skipping bootstrap script..."
 fi
 
 unset_secrets
 
-log SUCCESS "Starting mariadb with tini as PID 1..."
+log_success "Starting mariadb with tini as PID 1..."
 
 exec mysqld --user=mysql --datadir=/var/lib/mysql
 

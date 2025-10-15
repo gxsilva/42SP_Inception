@@ -11,9 +11,9 @@ log_warn()    { echo "⚠️ [WARN] $*"; }
 #DEBUG CONFIGURATION
 if [ "${DEBUG:-}" = "true" ]; then
     set -x
-    log INFO "Debug mode ENABLE"
+    log_info "Debug mode ENABLE"
 else
-    log INFO "Debug mode DISABLE"
+    log_info "Debug mode DISABLE"
 fi
 
 #MANAGEMENT SECRETS 
@@ -40,34 +40,34 @@ fi
 cd /var/www/html
 
 wait_for_mysql() {
-   log INFO "Waiting for MySQL database to be ready..."
+   log_info "Waiting for MySQL database to be ready..."
     local max_retries=30
     local count=0
     
     until mysqladmin ping -h"mariadb" -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" --silent; do
         count=$((count + 1))
         if [ $count -ge $max_retries ]; then
-            log WARN "MySQL connection timeout after $max_retries attempts"
+            log_warn "MySQL connection timeout after $max_retries attempts"
             return 1
         fi
-        log INFO "Waiting for database connection... (attempt $count/$max_retries)"
+        log_info "Waiting for database connection... (attempt $count/$max_retries)"
         sleep 2
     done
     
-    log SUCCESS "MySQL database is ready"
+    log_success "MySQL database is ready"
     return 0
 }
 
 download_wordpress() {
     if [ ! -f "wp-load.php" ]; then
-        log INFO "Downloading WordPress core files..."
+        log_info "Downloading WordPress core files..."
         wp core download --allow-root || {
-            log ERROR "Failed to download WordPress"
+            log_error "Failed to download WordPress"
             return 1
         }
-        log SUCCESS "WordPress core files downloaded successfully"
+        log_success "WordPress core files downloaded successfully"
     else
-        log INFO "WordPress core files already exist"
+        log_info "WordPress core files already exist"
     fi
     return 0
 }
@@ -82,12 +82,12 @@ create_wp_config() {
             --dbhost="$WORDPRESS_DB_HOST" \
             --allow-root \
             --skip-check || {
-            log ERROR "Failed to create wp-config.php"
+            log_error "Failed to create wp-config.php"
             return 1
         }
-        log SUCCESS "WordPress configuration created successfully"
+        log_success "WordPress configuration created successfully"
     else
-        log INFO "WordPress configuration already exists"
+        log_info "WordPress configuration already exists"
     fi
     return 0
 }
@@ -103,26 +103,26 @@ install_wordpress() {
             --admin_email="$WORDPRESS_ADMIN_EMAIL" \
             --allow-root \
             --skip-email || {
-            log ERROR "Failed to install WordPress"
+            log_error "Failed to install WordPress"
             return 1
         }
-        log SUCCESS "WordPress installed successfully"
+        log_success "WordPress installed successfully"
     else
-        log INFO "WordPress is already installed"
+        log_info "WordPress is already installed"
         
         # Update admin password if it changed
         if wp user get "$WORDPRESS_ADMIN_USER" --allow-root >/dev/null 2>&1; then
-            log WARN "Updating admin user password..."
+            log_warn "Updating admin user password..."
             wp user update "$WORDPRESS_ADMIN_USER" \
                 --user_pass="$WORDPRESS_ADMIN_PASSWORD" \
                 --allow-root 2>/dev/null
         else
-            log INFO "Creating admin user..."
+            log_info "Creating admin user..."
             wp user create "$WORDPRESS_ADMIN_USER" "$WORDPRESS_ADMIN_EMAIL" \
                 --role=administrator \
                 --user_pass="$WORDPRESS_ADMIN_PASSWORD" \
                 --allow-root 2>/dev/null || \
-                log ERROR "Admin user already exists or creation failed"
+                log_error "Admin user already exists or creation failed"
         fi
     fi
     return 0
@@ -145,10 +145,10 @@ main() {
     install_wordpress || exit 1
     unset_variables || exit 1
 
-    log SUCCESS "WordPress initialization completed"
+    log_success "WordPress initialization completed"
 }
 
 main
 
-log INFO "Start PHP-FMP"
+log_info "Start PHP-FMP"
 exec /usr/sbin/php-fpm7.4 -F
