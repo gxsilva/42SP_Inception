@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inception of Things</title>
+<style>
+    :root {
+        --bg-color: #0f0f10;
+        --text-color: #ffffff;
+        --accent-color: #eeff00;
+        --font-main: "Segoe UI", sans-serif;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        width: 100vw;
+        height: 100vh;
+        font-family: var(--font-main);
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-image: url('./src/img/background_image.jpg');
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        text-align: center;
+    }
+
+    h2 {
+        font-weight: 400;
+        margin-bottom: 2rem;
+        color: var(--text-color);
+    }
+
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    a {
+        text-decoration: none;
+        color: var(--accent-color);
+        font-weight: 500;
+        transition: color 0.3s ease;
+    }
+
+    a:hover {
+        color: #ffffff;
+    }
+
+    @media (max-width: 600px) {
+        h1 { font-size: 1.8rem; }
+        ul { flex-direction: column; align-items: center; gap: 1rem; }
+    }
+</style>
+</head>
+<body>
+    <h1>Inception of Things</h1>
+    <h2>by: lsilva-x</h2>
+    <ul>
+        <li><a href="https://www.linkedin.com/in/lucas-gabriel-dev">Linkedin</a></li>
+        <li><a href="https://medium.com/@lssvgabriel">Medium</a></li>
+        <li><a href="https://github.com/gxsilva">GitHub</a></li>
+    </ul>
+</body>
+</html>

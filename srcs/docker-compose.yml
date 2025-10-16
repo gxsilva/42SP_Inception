@@ -12,6 +12,7 @@ services:
       - "443:443"
     volumes:
       - wordpress_data:/var/www/html:ro
+      - static_data:/var/www/static:ro
     networks:
       - inception_network
     healthcheck:
@@ -124,6 +125,12 @@ volumes:
       type: none
       o: bind
       device: "/home/lsilva-x/data/mariadb"
+  static_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: "/home/lsilva-x/data/static"
 # ========================== SECRETS ===============================
 secrets:
   db_password:
