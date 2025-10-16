@@ -37,16 +37,6 @@ else
     exit 1
 fi
 
-if [ -z "${VSFTPD_USER_PASSWORD:-}" ] &&  [ -f "${VSFTPD_SP_USER_PASSWORD}" ]; then
-    VSFTPD_USER_PASSWORD=$(cat "${VSFTPD_SP_USER_PASSWORD}")
-    if [ "${DEBUG:-}" = "true" ]; then
-        log_debug "VSFTPD_USER_PASSWORD: ${VSFTPD_USER_PASSWORD}"
-    fi
-else
-    log_error "Failed to initialize VSFTPD_USER_PASSWORD. File not found or empty at path: ${VSFTPD_SP_USER_PASSWORD}"
-    exit 1
-fi
-
 cd /var/www/html
 
 wait_for_mysql() {
@@ -78,25 +68,6 @@ wait_for_redis() {
             log_info "Redis is available"
             return 0
         fi
-        count=$((count + 1))
-        sleep 1
-    done
-    
-    log_info "Redis not available (optional) - continuing without it"
-    return 0
-}
-
-wait_for_vsftp() {
-    local max_retries=10
-    local count=0
-
-    log_info "Waiting for vsftpd..."
-
-    while [ $count -lt $max_retries ]; do
-      if nc -z vsftpd 21 2>/dev/null || timeout 1 bash -c "cat < /dev/null > /dev/tcp/vsftpd/21" 2>/dev/null; then
-            log_info "Redis is available"
-            return 0
-       fi
         count=$((count + 1))
         sleep 1
     done
@@ -157,7 +128,7 @@ configure_redis() {
 
 configure_vsftpd() {
     wp config set FS_METHOD ftpext --path="$WORDPRESS_PATH" --allow-root
-    wp config set FTP_HOST "$VSFTPD_HOST" --path="$WORDPRESS_PATH" --allow-root
+    wp config set FTP_HOST "172.18.0.4" --path="$WORDPRESS_PATH" --allow-root
     wp config set FTP_USER "$VSFTPD_USER" --path="$WORDPRESS_PATH" --allow-root
     wp config set FTP_PASS "$VSFTPD_USER_PASSWORD" --path="$WORDPRESS_PATH" --allow-root
 
@@ -246,13 +217,11 @@ unset_variables() {
 main() {
     wait_for_mysql || exit 1
     wait_for_redis || exit 1
-    # wait_for_vsftp || exit 1
 
     download_wordpress || exit 1
     create_wp_config || exit 1
 
     configure_redis || exit 1
-    configure_vsftpd || exit 1
     
     install_wordpress || exit 1
 
