@@ -60,6 +60,7 @@ services:
     secrets:
       - db_password
       - wordpress_admin_password
+      - vsftpd_user_password
     restart: unless-stopped
     networks:
       - inception_network
@@ -94,6 +95,24 @@ services:
       retries: 5
       start_period: 10s
     restart: unless-stopped
+# ========================== REDIS CONF ===============================
+  vsftpd:
+    container_name: vsftpd
+    build:
+      context: ./requirements/bonus/vsftpd
+      dockerfile: Dockerfile
+    image: vsftpd:inception
+    env_file:
+      - ./.env
+    networks:
+      - inception_network
+    volumes:
+      - wordpress_data:/var/www/html
+    secrets:
+      - vsftpd_user_password
+    ports:
+      - "21:21"
+      - "21100-21110:21100-21110"
 # ========================== VOLUMES ===============================
 volumes:
   wordpress_data:
@@ -116,6 +135,9 @@ secrets:
     file: ../secrets/db_root_password.txt
   wordpress_admin_password:
     file: ../secrets/wordpress_admin_password.txt
+  vsftpd_user_password:
+    file: ../secrets/vsftpd_user_password.txt
+
 # ========================== NETWORK ===============================
 networks:
   inception_network:
