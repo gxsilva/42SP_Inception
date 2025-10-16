@@ -60,6 +60,7 @@ services:
     secrets:
       - db_password
       - wordpress_admin_password
+      - proftpd_user_password
     restart: unless-stopped
     networks:
       - inception_network
@@ -94,6 +95,21 @@ services:
       retries: 5
       start_period: 10s
     restart: unless-stopped
+# ========================== FTP CONF ===============================
+  proftpd:
+    container_name: proftpd
+    build:
+      context: ./requirements/bonus/proftpd
+      dockerfile: Dockerfile
+    image: proftpd:inception
+    env_file:
+      - ./.env
+    networks:
+      - inception_network
+    volumes:
+      - wordpress_data:/var/www/html
+    secrets:
+      - proftpd_user_password
 # ========================== VOLUMES ===============================
 volumes:
   wordpress_data:
@@ -116,6 +132,9 @@ secrets:
     file: ../secrets/db_root_password.txt
   wordpress_admin_password:
     file: ../secrets/wordpress_admin_password.txt
+  proftpd_user_password:
+    file: ../secrets/proftpd_user_password.txt
+
 # ========================== NETWORK ===============================
 networks:
   inception_network:

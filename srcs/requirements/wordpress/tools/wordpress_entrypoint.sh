@@ -126,6 +126,15 @@ configure_redis() {
     return 0
 }
 
+configure_vsftpd() {
+    wp config set FS_METHOD ftpext --path="$WORDPRESS_PATH" --allow-root
+    wp config set FTP_HOST "172.18.0.4" --path="$WORDPRESS_PATH" --allow-root
+    wp config set FTP_USER "$VSFTPD_USER" --path="$WORDPRESS_PATH" --allow-root
+    wp config set FTP_PASS "$VSFTPD_USER_PASSWORD" --path="$WORDPRESS_PATH" --allow-root
+
+    log_success "FTP configuration for WordPress set successfully!"
+}
+
 setup_redis_plugin() {
     log_info "Setting up Redis cache plugin..."
     
@@ -198,6 +207,9 @@ unset_variables() {
     fi
     if [ -z "$WORDPRESS_ADMIN_PASSWORD" ]; then
         unset WORDPRESS_ADMIN_PASSWORD
+    fi
+    if [ -z "$VSFTPD_USER_PASSWORD" ]; then
+        unset VSFTPD_USER_PASSWORD
     fi
     return 0
 }

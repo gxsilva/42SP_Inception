@@ -5,6 +5,7 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     wget curl ca-certificates gnupg \
     tini \
+    ftp \
     mariadb-client \
     php php-fpm php-cli php-mysql php-curl php-gd php-mbstring php-xml php-zip \
     php-redis \
