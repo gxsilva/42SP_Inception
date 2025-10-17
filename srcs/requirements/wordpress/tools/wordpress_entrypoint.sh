@@ -37,6 +37,16 @@ else
     exit 1
 fi
 
+if [ -z "${WORDPRESS_USER_PASSWORD:-}" ] &&  [ -f "${WORDPRESS_SP_USER_PASSWORD}" ]; then
+    WORDPRESS_USER_PASSWORD=$(cat "${WORDPRESS_SP_USER_PASSWORD}")
+    if [ "${DEBUG:-}" = "true" ]; then
+        log_debug "WORDPRESS_USER_PASSWORD: ${WORDPRESS_USER_PASSWORD}"
+    fi
+else
+    log_error "Failed to initialize WORDPRESS_USER_PASSWORD. File not found or empty at path: ${WORDPRESS_SP_USER_PASSWORD}"
+    exit 1
+fi
+
 cd /var/www/html
 
 wait_for_mysql() {
@@ -179,6 +189,11 @@ install_wordpress() {
             log_error "Failed to install WordPress"
             return 1
         }
+        wp user create "$WORDPRESS_USER" "$WORDPRESS_USER_EMAIL" \
+            --role=author \
+            --user_pass="$WORDPRESS_USER_PASSWORD" \
+            --allow-root 2>/dev/null || \
+            log_info "Author user already exists or creation failed"
         log_success "WordPress installed successfully"
     else
         log_info "WordPress is already installed"

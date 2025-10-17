@@ -64,6 +64,7 @@ services:
     secrets:
       - db_password
       - wordpress_admin_password
+      - wordpress_user_password
     restart: unless-stopped
     networks:
       - inception_network
@@ -173,6 +174,8 @@ secrets:
     file: ../secrets/db_root_password.txt
   wordpress_admin_password:
     file: ../secrets/wordpress_admin_password.txt
+  wordpress_user_password:
+    file: ../secrets/wordpress_user_password.txt
   portainer_password:
     file: ../secrets/portainer_password.txt
 # ========================== NETWORK ===============================
