@@ -48,6 +48,9 @@ services:
       timeout: 10s
       retries: 5
       start_period: 30s
+    depends_on:
+      portainer:
+        condition: service_started
     restart: unless-stopped
 # ========================== WORDPRESS CONF ===============================
   wordpress:
@@ -114,8 +117,27 @@ services:
     build:
       context: ./requirements/bonus/adminer
       dockerfile: Dockerfile
+    image: adminer:inception
     networks:
       - inception_network
+    restart: unless-stopped
+# ========================== PORTAINER IO CONF ===========================
+
+  portainer:
+    container_name: portainer
+    build:
+      context: ./requirements/bonus/portainer
+      dockerfile: Dockerfile
+    image: portainer:inception
+    networks:
+      - inception_network
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # Docker socket access
+      - portainer_data:/data
+    secrets:
+      - portainer_password
+    env_file:
+      - ./.env
     restart: unless-stopped
 # ========================== VOLUMES ===============================
 volumes:
@@ -137,6 +159,12 @@ volumes:
       type: none
       o: bind
       device: "/home/lsilva-x/data/static"
+  portainer_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: "/home/lsilva-x/data/portainer"
 # ========================== SECRETS ===============================
 secrets:
   db_password:
@@ -145,6 +173,8 @@ secrets:
     file: ../secrets/db_root_password.txt
   wordpress_admin_password:
     file: ../secrets/wordpress_admin_password.txt
+  portainer_password:
+    file: ../secrets/portainer_password.txt
 # ========================== NETWORK ===============================
 networks:
   inception_network:
