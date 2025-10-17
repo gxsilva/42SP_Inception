@@ -61,7 +61,6 @@ services:
     secrets:
       - db_password
       - wordpress_admin_password
-      - proftpd_user_password
     restart: unless-stopped
     networks:
       - inception_network
@@ -109,8 +108,17 @@ services:
       - inception_network
     volumes:
       - wordpress_data:/var/www/html
-    secrets:
-      - proftpd_user_password
+# ========================== ADMINER CONF ===============================
+  adminer:
+    container_name: adminer
+    build:
+      context: ./requirements/bonus/adminer
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    networks:
+      - inception_network
+    restart: unless-stopped
 # ========================== VOLUMES ===============================
 volumes:
   wordpress_data:
@@ -139,9 +147,6 @@ secrets:
     file: ../secrets/db_root_password.txt
   wordpress_admin_password:
     file: ../secrets/wordpress_admin_password.txt
-  proftpd_user_password:
-    file: ../secrets/proftpd_user_password.txt
-
 # ========================== NETWORK ===============================
 networks:
   inception_network:
