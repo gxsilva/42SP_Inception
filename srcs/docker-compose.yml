@@ -48,9 +48,6 @@ services:
       timeout: 10s
       retries: 5
       start_period: 30s
-    depends_on:
-      portainer:
-        condition: service_started
     restart: unless-stopped
 # ========================== WORDPRESS CONF ===============================
   wordpress:
@@ -65,6 +62,8 @@ services:
       - db_password
       - wordpress_admin_password
       - wordpress_user_password
+      - wordpress_admin_email
+      - wordpress_user_email
     restart: unless-stopped
     networks:
       - inception_network
@@ -73,6 +72,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      proftpd:
+        condition: service_started
     volumes:
       - wordpress_data:/var/www/html
     healthcheck:
@@ -123,7 +124,6 @@ services:
       - inception_network
     restart: unless-stopped
 # ========================== PORTAINER IO CONF ===========================
-
   portainer:
     container_name: portainer
     build:
@@ -148,18 +148,21 @@ volumes:
       type: none
       o: bind
       device: "/home/lsilva-x/data/wordpress"
+
   mariadb_data:
     driver: local
     driver_opts:
       type: none
       o: bind
       device: "/home/lsilva-x/data/mariadb"
+
   static_data:
     driver: local
     driver_opts:
       type: none
       o: bind
       device: "/home/lsilva-x/data/static"
+      
   portainer_data:
     driver: local
     driver_opts:
@@ -172,10 +175,16 @@ secrets:
     file: ../secrets/db_password.txt
   db_root_password:
     file: ../secrets/db_root_password.txt
+
   wordpress_admin_password:
     file: ../secrets/wordpress_admin_password.txt
   wordpress_user_password:
     file: ../secrets/wordpress_user_password.txt
+  wordpress_user_email:
+    file: ../secrets/wordpress_user_email.txt
+  wordpress_admin_email:
+    file: ../secrets/wordpress_admin_email.txt
+
   portainer_password:
     file: ../secrets/portainer_password.txt
 # ========================== NETWORK ===============================

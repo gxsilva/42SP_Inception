@@ -20,6 +20,7 @@ debug_log() {
 
 # ==================SET and UNSET SECRETS AS ENV============================
 set_env () {
+    # MYSQL PASSWORD
     if [ -z "${MYSQL_PASSWORD:-}" ] &&  [ -f "${MYSQL_SP_PASSWORD}" ]; then
         MYSQL_PASSWORD=$(cat "${MYSQL_SP_PASSWORD}")
         if [ "${DEBUG:-}" = "true" ]; then
@@ -30,6 +31,7 @@ set_env () {
         return 1
     fi
 
+    # WORDPRESS ADMIN PASSWORD
     if [ -z "${WORDPRESS_ADMIN_PASSWORD:-}" ] &&  [ -f "${WORDPRESS_SP_ADMIN_PASSWORD}" ]; then
         WORDPRESS_ADMIN_PASSWORD=$(cat "${WORDPRESS_SP_ADMIN_PASSWORD}")
         if [ "${DEBUG:-}" = "true" ]; then
@@ -40,6 +42,7 @@ set_env () {
         return 1
     fi
 
+    # WORDPRESS USER PASSWORD
     if [ -z "${WORDPRESS_USER_PASSWORD:-}" ] &&  [ -f "${WORDPRESS_SP_USER_PASSWORD}" ]; then
         WORDPRESS_USER_PASSWORD=$(cat "${WORDPRESS_SP_USER_PASSWORD}")
         if [ "${DEBUG:-}" = "true" ]; then
@@ -47,6 +50,28 @@ set_env () {
         fi
     else
         log_error "Failed to initialize WORDPRESS_USER_PASSWORD. File not found or empty at path: ${WORDPRESS_SP_USER_PASSWORD}"
+        return 1
+    fi
+
+    # WORDPRESS USER EMAIL
+    if [ -z "${WORDPRESS_USER_EMAIL:-}" ] &&  [ -f "${WORDPRESS_SP_USER_EMAIL}" ]; then
+        WORDPRESS_USER_EMAIL=$(cat "${WORDPRESS_SP_USER_EMAIL}")
+        if [ "${DEBUG:-}" = "true" ]; then
+            log_debug "WORDPRESS_USER_EMAIL: ${WORDPRESS_USER_EMAIL}"
+        fi
+    else
+        log_error "Failed to initialize WORDPRESS_USER_EMAIL. File not found or empty at path: ${WORDPRESS_SP_USER_EMAIL}"
+        return 1
+    fi
+
+    # WORDPRESS ADMIN EMAIL
+    if [ -z "${WORDPRESS_ADMIN_EMAIL:-}" ] &&  [ -f "${WORDPRESS_SP_ADMIN_EMAIL}" ]; then
+        WORDPRESS_ADMIN_EMAIL=$(cat "${WORDPRESS_SP_ADMIN_EMAIL}")
+        if [ "${DEBUG:-}" = "true" ]; then
+            log_debug "WORDPRESS_ADMIN_EMAIL: ${WORDPRESS_ADMIN_EMAIL}"
+        fi
+    else
+        log_error "Failed to initialize WORDPRESS_ADMIN_EMAIL. File not found or empty at path: ${WORDPRESS_SP_ADMIN_EMAIL}"
         return 1
     fi
 }
@@ -60,6 +85,12 @@ unset_variables() {
     fi
     if [ -z "$VSFTPD_USER_PASSWORD" ]; then
         unset VSFTPD_USER_PASSWORD
+    fi
+    if [ -z "$WORDPRESS_USER_EMAIL" ]; then
+        unset WORDPRESS_USER_EMAIL
+    fi
+    if [ -z "$WORDPRESS_ADMIN_EMAIL" ]; then
+        unset WORDPRESS_ADMIN_EMAIL
     fi
     return 0
 }
