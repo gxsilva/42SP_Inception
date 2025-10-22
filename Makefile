@@ -18,7 +18,7 @@ create-dirs:
 	mkdir -p $(VOLUME_DIRS)
 
 up: create-dirs
-	docker compose -f $(DC_SOURCE_FILE) up -d
+	docker compose -f $(DC_SOURCE_FILE) up
 
 down:
 	docker compose -f $(DC_SOURCE_FILE) down
