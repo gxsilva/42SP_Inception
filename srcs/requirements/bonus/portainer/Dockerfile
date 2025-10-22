@@ -3,7 +3,7 @@ FROM debian:bullseye
 RUN apt-get update && apt-get install -y \
     wget \
     ca-certificates \
-    tini \
+    # tini \
     && rm -rf /var/lib/apt/lists/*
 
 # Download and extract Portainer
@@ -18,7 +18,6 @@ COPY ./tools/portainer_entrypoint.sh /usr/local/bin
 RUN mkdir -p /data \
     && chmod +x /usr/local/bin/portainer_entrypoint.sh
 
-EXPOSE 9000 9443
+EXPOSE 9443
 
-ENTRYPOINT ["/usr/bin/tini", "--"]
-CMD ["/usr/local/bin/portainer_entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/portainer_entrypoint.sh"]
