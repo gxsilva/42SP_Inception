@@ -6,8 +6,13 @@ DC_SOURCE_FILE=./srcs/docker-compose.yml
 
 all: build up
 
-build:
+nc: no-cache up
+
+no-cache:
 	docker compose -f $(DC_SOURCE_FILE) build --no-cache
+
+build:
+	docker compose -f $(DC_SOURCE_FILE) build
 
 create-dirs:
 	mkdir -p $(VOLUME_DIRS)
