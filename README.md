@@ -63,6 +63,8 @@ Since this project sets up a local Docker environment, a live demo is not applic
 
 ## 🚀Quick Start
 
+> ⚠️ **Warning:** The passwords stored in the `/secrets` directory are intended solely for academic demonstration purposes. These credentials are not secure and must never be used in any production environment.
+
 Clone the repository and start the environment using Docker Compose:
 
 ```bash
