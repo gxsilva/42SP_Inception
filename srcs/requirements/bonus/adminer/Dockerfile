@@ -3,6 +3,7 @@ FROM debian:bullseye
 RUN apt-get update && apt-get install -y \
     apache2 \
     php \
+    tini \
     php-mysqli \
     php-pgsql \
     php-sqlite3 \
@@ -21,4 +22,5 @@ RUN chown -R www-data:www-data /var/www/html
 
 EXPOSE 8080
 
+ENTRYPOINT ["/usr/bin/tini", "--"]
 CMD ["apachectl", "-D", "FOREGROUND"]
