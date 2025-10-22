@@ -71,7 +71,7 @@ cd 42SP_Inception
 make all
 ```
 
-This will build and start all the defined services in attached mode.
+This will build and start all the defined services in foreground mode.
 
 ## 📦Installation
 
@@ -109,7 +109,7 @@ Or if it is at the same level as docker-compose.yml
 ```bash
 docker compose up -d
 ```
-`-d` to detached mode or without anything to check the logs in `attach mode`
+`-d` to detached mode or without anything to check the logs in `foreground mode`
 
 This command will build and start all the services defined in the `docker-compose.yml` file.
 

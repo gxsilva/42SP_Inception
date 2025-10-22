@@ -32,15 +32,15 @@ RUN sed -i 's/listen = \/run\/php\/php.*\.sock/listen = 0.0.0.0:9000/' /etc/php/
 
 WORKDIR /var/www/html
 
-COPY ./tools/wordpress_entrypoint.sh /usr/local/bin/
+COPY ./tools /usr/local/tools
 
-RUN chmod +x  /usr/local/bin/wordpress_entrypoint.sh 
+RUN chmod -R +x /usr/local/tools
 
 #PORT
 EXPOSE 9000
 
 ENTRYPOINT ["/usr/bin/tini", "--"]
-CMD ["/usr/local/bin/wordpress_entrypoint.sh"]
+CMD ["/usr/local/tools/wordpress_entrypoint.sh"]
 
 #OCI METADATAS
 LABEL org.opencontainers.image.title="wordpress_image_inception_42" \
