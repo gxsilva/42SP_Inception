@@ -19,24 +19,25 @@ This project aims to provide a hands-on experience with containerization and orc
 
 ## 📋 Table of Contents
 
-- [📖 About](#about)
-- [✨ Features](#features)
-- [🎥 Demo](#demo)
-- [⚡ Quick Start](#quick-start)
-- [🧩 Installation](#installation)
-- [🧭 Usage](#usage)
-- [⚙️ Configuration](#configuration)
-- [🏗️ Project Structure](#project-structure)
-- [🤝 Contributing](#contributing)
-- [🧪 Testing](#testing)
-- [🚀 Deployment](#deployment)
-- [❓ FAQ](#faq)
-- [📄 License](#license)
-- [💬 Support](#support)
-- [🌟 Acknowledgments](#acknowledgments)
+- [📖 About](#📖about)
+- [✨ Features](#✨features)
+- [🎥 Demo](#🎥demo)
+- [🚀 Quick Start](#🚀quick-start)
+- [📦 Installation](#📦installation)
+- [🧭 Usage](#🧭usage)
+- [⚙️ Configuration](#⚙️configuration)
+- [📁 Project Structure](#📁project-structure)
+- [📐 Project Scheme](#📐project-scheme)
+- [🤝 Contributing](#🤝contributing)
+- [🧪 Testing](#🧪testing)
+- [🚀 Deployment](#🚀deployment)
+- [❓ FAQ](#❓faq)
+- [📄 License](#📄license)
+- [💬 Support](#💬support)
+- [🌟 Acknowledgments](#🌟acknowledgments)
 
 
-## About
+## 📖About
 
 This project is designed to help users understand and implement containerization and orchestration using Docker and Docker Compose. It sets up a multi-container environment that simulates a real-world production deployment. The project is particularly useful for students, developers, and system administrators who want to gain hands-on experience with these technologies.
 
@@ -44,7 +45,7 @@ The primary goal is to create a fully functional, containerized infrastructure u
 
 Key technologies used in this project include Docker, Docker Compose, and Shell scripting for automation. The architecture involves defining services in a `docker-compose.yml` file, which Docker Compose uses to build and run the containers. The project also includes scripts for setting up the environment, managing containers, and performing common tasks. The unique selling point of this project is its comprehensive approach to creating a production-like environment from scratch, providing a valuable learning experience.
 
-## ✨ Features
+## ✨Features
 
 - 🎯 **Multi-Container Setup**: Orchestrates multiple Docker containers using Docker Compose.
 - ⚡ **Automated Deployment**: Uses Shell scripts to automate the setup and deployment process.
@@ -53,7 +54,7 @@ Key technologies used in this project include Docker, Docker Compose, and Shell 
 - 🐳 **Production-Like Environment**: Simulates a real-world production deployment for hands-on experience.
 - 📚 **Educational**: Provides a practical learning experience for Docker and Docker Compose.
 
-## 🎬 Demo
+## 🎥Demo
 
 Since this project sets up a local Docker environment, a live demo is not applicable. However, here are some screenshots to illustrate the setup and usage:
 
@@ -65,7 +66,7 @@ Since this project sets up a local Docker environment, a live demo is not applic
 ![Docker ps](screenshots/docker-ps.png)
 *Terminal output showing the running Docker containers*
 
-## 🚀 Quick Start
+## 🚀Quick Start
 
 Clone the repository and start the environment using Docker Compose:
 
@@ -77,7 +78,7 @@ make all
 
 This will build and start all the defined services in attached mode.
 
-## 📦 Installation
+## 📦Installation
 
 ### Prerequisites
 
@@ -117,7 +118,7 @@ docker compose up -d
 
 This command will build and start all the services defined in the `docker-compose.yml` file.
 
-## 💻 Usage
+## 🧭Usage
 
 After the installation, you can access the services running in the containers. The specific URLs and ports will depend on the configuration in the `docker-compose.yml` file.
 
@@ -133,7 +134,7 @@ docker compose down
 
 This command will stop and remove all the containers defined in the `docker-compose.yml` file.
 
-## ⚙️ Configuration
+## ⚙️Configuration
 
 ### Secrets Variables
 
@@ -146,7 +147,7 @@ You can configure the project using secrets variables. Create a `./secrets` fold
 
 These variables can then be used in the `docker-compose.yml` file to configure the services.
 
-## 📁 Project Structure
+## 📁Project Structure
 
 ```
 ├── LICENSE
@@ -173,7 +174,14 @@ These variables can then be used in the `docker-compose.yml` file to configure t
         └── wordpress/
 ```
 
-## 🤝 Contributing
+## 📐Project Scheme
+The project scheme provides a visual overview of the containerized infrastructure and how the different services interact within the environment.
+
+<img src="screenshots/scheme.png" alt="Project Scheme" width="650"  style="max-width:100%;height:auto;" />
+
+*Project diagram made for greater abstraction of the structure*
+
+## 🤝Contributing
 
 We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
 
@@ -204,7 +212,7 @@ git checkout -b feature/your-feature-name
 git commit -m "Description of changes"
 git push origin feature/your-feature-name
 ```
-## Testing
+## 🧪Testing
 
 This project relies on Docker Compose for testing the environment. You can use the `docker compose up` command to start the environment and verify that the services are running correctly.
 
@@ -216,7 +224,7 @@ docker exec -it <container_id> bash
 
 This will open a bash shell inside the container, allowing you to run tests and debug the application.
 
-## Deployment
+## 🚀Deployment
 
 This project can be deployed to various platforms that support Docker and Docker Compose. Here are some common deployment options:
 
@@ -225,7 +233,7 @@ This project can be deployed to various platforms that support Docker and Docker
 -   **Docker Swarm**: You can deploy the project to a Docker Swarm cluster.
 -   **Kubernetes**: You can convert the Docker Compose configuration to Kubernetes manifests and deploy the project to a Kubernetes cluster.
 
-## FAQ
+## ❓FAQ
 
 **Q: How do I update the containers?**
 
@@ -252,7 +260,7 @@ A: You can scale a service using the `docker compose scale` command:
 docker compose scale <service_name>=<number_of_replicas>
 ```
 
-## 📄 License
+## 📄License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
@@ -265,10 +273,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 -   ❌ Liability
 -   ❌ Warranty
 
-## 💬 Support
+## 💬Support
 -   🐛 **Issues**: [GitHub Issues](https://github.com/gxsilva/42SP_Inception/issues)
 
-## 🙏 Acknowledgments
+## 🌟Acknowledgments
 
 -   📚 **Libraries used**:
     -   [Docker](https://www.docker.com/) - Containerization platform
