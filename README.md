@@ -266,15 +266,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 -   ❌ Warranty
 
 ## 💬 Support
-
--   📧 **Email**: your.email@example.com
 -   🐛 **Issues**: [GitHub Issues](https://github.com/gxsilva/42SP_Inception/issues)
--   📖 **Documentation**: [Full Documentation](https://docs.your-site.com)
 
 ## 🙏 Acknowledgments
 
 -   📚 **Libraries used**:
     -   [Docker](https://www.docker.com/) - Containerization platform
     -   [Docker Compose](https://docs.docker.com/compose/) - Tool for defining and running multi-container Docker applications
--   👥 **Contributors**: Thanks to all [contributors](https://github.com/gxsilva/42SP_Inception/contributors)
-```
