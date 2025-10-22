@@ -27,15 +27,12 @@ This project aims to provide a hands-on experience with containerization and orc
 - [🧭 Usage](#🧭usage)
 - [⚙️ Configuration](#⚙️configuration)
 - [📁 Project Structure](#📁project-structure)
-- [📐 Project Scheme](#📐project-scheme)
 - [🤝 Contributing](#🤝contributing)
 - [🧪 Testing](#🧪testing)
 - [🚀 Deployment](#🚀deployment)
 - [❓ FAQ](#❓faq)
-- [📄 License](#📄license)
 - [💬 Support](#💬support)
 - [🌟 Acknowledgments](#🌟acknowledgments)
-
 
 ## 📖About
 
